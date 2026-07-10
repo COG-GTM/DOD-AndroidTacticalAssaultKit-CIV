@@ -165,9 +165,9 @@ public class VideoFileWatcher implements Runnable {
                     // any edits made by the user
                     for (int i = 0; i < parsed.size(); i++) {
                         ConnectionEntry ce = parsed.get(i);
-                        File xml = new File(VideoManager.ENTRIES_DIR,
-                                ce.getUID() + ".xml");
-                        if (IOProviderFactory.exists(xml))
+                        File xml = VideoManager.getEntryFile(
+                                VideoManager.ENTRIES_DIR, ce.getUID());
+                        if (xml == null || IOProviderFactory.exists(xml))
                             parsed.remove(i--);
                         else
                             ce.setLocalFile(xml);

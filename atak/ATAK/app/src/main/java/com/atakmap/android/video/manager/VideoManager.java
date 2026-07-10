@@ -10,6 +10,7 @@ import com.atakmap.coremap.io.IOProviderFactory;
 import com.atakmap.coremap.log.Log;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -295,8 +296,8 @@ public class VideoManager {
         if (removed == null)
             return null;
         if (removed.isRemote()) {
-            File file = new File(ENTRIES_DIR, uid + ".xml");
-            if (IOProviderFactory.exists(file))
+            File file = getEntryFile(ENTRIES_DIR, uid);
+            if (file != null && IOProviderFactory.exists(file))
                 FileSystemUtils.delete(file);
         }
         removed.dispose();
@@ -317,10 +318,55 @@ public class VideoManager {
             return;
         File file = entry.getLocalFile();
         if (!FileSystemUtils.isFile(file)) {
-            file = new File(ENTRIES_DIR, entry.getUID() + ".xml");
+            file = getEntryFile(ENTRIES_DIR, uid);
+            if (file == null) {
+                Log.w(TAG, "Refusing to persist entry with unsafe UID");
+                return;
+            }
             entry.setLocalFile(file);
         }
         _xmlHandler.write(entry, file);
+    }
+
+    /**
+     * Resolve the XML file used to persist an entry with the given UID
+     * The file must resolve to a direct child of the entries directory -
+     * UIDs containing path traversal sequences, path separators, or absolute
+     * paths are rejected
+     *
+     * @param entriesDir Directory containing persisted entry files
+     * @param uid Connection entry UID
+     * @return Entry XML file or null if the UID is empty or unsafe
+     */
+    static File getEntryFile(File entriesDir, String uid) {
+        if (FileSystemUtils.isEmpty(uid))
+            return null;
+        File file = new File(entriesDir, uid + ".xml");
+        try {
+            File parent = file.getCanonicalFile().getParentFile();
+            if (parent == null
+                    || !parent.equals(entriesDir.getCanonicalFile())) {
+                Log.w(TAG, "Rejecting entry UID that resolves outside the "
+                        + "entries directory: " + uid);
+                return null;
+            }
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to resolve entry file for UID: " + uid, e);
+            return null;
+        }
+        return file;
+    }
+
+    /**
+     * Check whether a connection entry UID is safe to use as the base name
+     * of its persisted XML file
+     *
+     * @param uid Connection entry UID
+     * @return True if the UID resolves to a file directly under the
+     *         entries directory
+     */
+    public static boolean isValidEntryUID(String uid) {
+        return getEntryFile(ENTRIES_DIR, uid) != null;
     }
 
     /**

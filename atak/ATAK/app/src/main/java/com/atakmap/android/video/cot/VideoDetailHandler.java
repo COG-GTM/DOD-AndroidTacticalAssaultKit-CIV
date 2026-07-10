@@ -84,6 +84,12 @@ public class VideoDetailHandler extends CotDetailHandler
             String uid = ce.getAttribute("uid");
             if (FileSystemUtils.isEmpty(uid))
                 uid = event.getUID();
+            if (!FileSystemUtils.isEmpty(uid)
+                    && !VideoManager.isValidEntryUID(uid)) {
+                Log.w(TAG, "Ignoring ConnectionEntry with unsafe UID: "
+                        + uid);
+                uid = null;
+            }
             if (!FileSystemUtils.isEmpty(uid)) {
                 // Video requires UID
                 ConnectionEntry entry = new ConnectionEntry(
