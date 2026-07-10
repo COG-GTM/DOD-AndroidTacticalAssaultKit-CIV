@@ -15,6 +15,8 @@ import com.atakmap.coremap.filesystem.FileSystemUtils;
 import com.atakmap.coremap.log.Log;
 import com.atakmap.android.video.VideoMapComponent;
 
+import java.io.File;
+
 /**
  * Video aliases which can optionally be attached to a marker
  * <__video 
@@ -82,11 +84,14 @@ public class VideoDetailHandler extends CotDetailHandler
             String uid = ce.getAttribute("uid");
             if (FileSystemUtils.isEmpty(uid))
                 uid = event.getUID();
-            if (!FileSystemUtils.isEmpty(uid)
-                    && !VideoManager.isValidEntryUID(uid)) {
-                Log.w(TAG, "Ignoring ConnectionEntry with unsafe UID: "
-                        + uid);
-                uid = null;
+            File entryFile = null;
+            if (!FileSystemUtils.isEmpty(uid)) {
+                entryFile = VideoManager.getEntryFile(uid);
+                if (entryFile == null) {
+                    Log.w(TAG, "Ignoring ConnectionEntry with unsafe UID: "
+                            + uid);
+                    uid = null;
+                }
             }
             if (!FileSystemUtils.isEmpty(uid)) {
                 // Video requires UID
@@ -117,7 +122,7 @@ public class VideoDetailHandler extends CotDetailHandler
                 } else if (existing == null && item != null
                         || existing != null && existing.isTemporary()) {
                     entry.setTemporary(true);
-                    entry.setLocalFile(VideoManager.getEntryFile(uid));
+                    entry.setLocalFile(entryFile);
                 } else if (existing != null)
                     entry.setLocalFile(existing.getLocalFile());
 
