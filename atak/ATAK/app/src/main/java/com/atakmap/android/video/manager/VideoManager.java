@@ -358,6 +358,16 @@ public class VideoManager {
     }
 
     /**
+     * Resolve the XML file used to persist an entry with the given UID
+     *
+     * @param uid Connection entry UID
+     * @return Entry XML file or null if the UID is empty or unsafe
+     */
+    public static File getEntryFile(String uid) {
+        return getEntryFile(ENTRIES_DIR, uid);
+    }
+
+    /**
      * Check whether a connection entry UID is safe to use as the base name
      * of its persisted XML file
      *
@@ -366,7 +376,7 @@ public class VideoManager {
      *         entries directory
      */
     public static boolean isValidEntryUID(String uid) {
-        return getEntryFile(ENTRIES_DIR, uid) != null;
+        return getEntryFile(uid) != null;
     }
 
     /**

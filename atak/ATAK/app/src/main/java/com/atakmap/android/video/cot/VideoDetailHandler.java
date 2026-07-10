@@ -15,8 +15,6 @@ import com.atakmap.coremap.filesystem.FileSystemUtils;
 import com.atakmap.coremap.log.Log;
 import com.atakmap.android.video.VideoMapComponent;
 
-import java.io.File;
-
 /**
  * Video aliases which can optionally be attached to a marker
  * <__video 
@@ -119,8 +117,7 @@ public class VideoDetailHandler extends CotDetailHandler
                 } else if (existing == null && item != null
                         || existing != null && existing.isTemporary()) {
                     entry.setTemporary(true);
-                    entry.setLocalFile(new File(VideoManager.ENTRIES_DIR,
-                            uid + ".xml"));
+                    entry.setLocalFile(VideoManager.getEntryFile(uid));
                 } else if (existing != null)
                     entry.setLocalFile(existing.getLocalFile());
 
