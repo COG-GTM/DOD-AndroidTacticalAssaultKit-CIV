@@ -41,7 +41,7 @@ jobs:
         apt -y install ninja-build
         apt -y install swig
         apt -y install tclsh
-        apt -y install python3-venv
+        apt -y install python3-venv bzip2 xz-utils zip file perl python3 curl pkg-config
         python3 -m venv /opt/conan-venv
         /opt/conan-venv/bin/pip install -U pip setuptools
         /opt/conan-venv/bin/pip install conan==1.59.0
