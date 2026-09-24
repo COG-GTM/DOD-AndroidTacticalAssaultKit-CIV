@@ -42,7 +42,7 @@ jobs:
         apt -y install swig
         apt -y install tclsh
         apt -y install python3-pip
-        pip3 install -U pip setuptools
+        pip3 install --break-system-packages -U pip setuptools
         pip3 install --break-system-packages conan==1.59.0
         echo "ANDROID_COMPILE_SDK=29" >> $GITHUB_ENV
         echo "ANDROID_BUILD_TOOLS=29.0.3" >> $GITHUB_ENV
