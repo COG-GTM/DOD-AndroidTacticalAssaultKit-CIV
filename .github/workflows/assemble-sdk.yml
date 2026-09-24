@@ -43,7 +43,7 @@ jobs:
         apt -y install tclsh
         apt -y install python3-pip
         pip3 install -U pip setuptools
-        pip3 install conan==1.59.0
+        pip3 install --break-system-packages conan==1.59.0
         echo "ANDROID_COMPILE_SDK=29" >> $GITHUB_ENV
         echo "ANDROID_BUILD_TOOLS=29.0.3" >> $GITHUB_ENV
         echo "ANDROID_SDK_TOOLS=9477386" >> $GITHUB_ENV
