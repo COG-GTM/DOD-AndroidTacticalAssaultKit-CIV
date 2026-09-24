@@ -10,7 +10,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: eclipse-temurin:11-jdk
+      image: eclipse-temurin:11-jdk-jammy
     defaults:
       run:
         shell: bash

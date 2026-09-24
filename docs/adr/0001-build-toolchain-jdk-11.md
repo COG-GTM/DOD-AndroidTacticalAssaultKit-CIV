@@ -35,7 +35,7 @@ network I/O — treated as false positives.
 
 ## Decision
 
-We will build every module of the repository with JDK 11 (CI container `eclipse-temurin:11-jdk`),
+We will build every module of the repository with JDK 11 (CI container `eclipse-temurin:11-jdk-jammy`),
 set Java 11 source/target for the non-Android `takkernel` build, keep Android modules and
 Android-consumed code (`commoncommo`) on Java 8 bytecode with AGP 4.2.2, pin all dynamic dependency versions, and replace PowerMock with Mockito 4
 static mocking.
@@ -91,7 +91,7 @@ C4Container
 - **Policy sections satisfied:** no infrastructure resources created or changed.
 - **Threats considered:** supply chain — all new/changed dependency versions (Mockito 4.11.0,
   mockito-inline 4.11.0, JaCoCo 0.8.7, takdev 2.4.1) are pinned, long-published releases; the
-  `eclipse-temurin:11-jdk` image is the vendor-supported successor to the deprecated `openjdk:8-jdk`.
+  `eclipse-temurin:11-jdk-jammy` image is the vendor-supported successor to the deprecated `openjdk:8-jdk`.
 
 ## Cost
 
