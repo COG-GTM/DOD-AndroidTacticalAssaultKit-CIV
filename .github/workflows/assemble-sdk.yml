@@ -102,7 +102,7 @@ jobs:
         done
     - name: Create Keystore
       run: |
-        echo y | $JAVA_HOME/bin/keytool -genkeypair -dname "cn=ATAK CIV, ou=, o=, c=US" -alias $KEYSTORE_ALIAS -keypass $KEYSTORE_KEY_PASSWORD -keystore $HOME/secrets/android_keystore -storepass $KEYSTORE_STORE_PASSWORD -validity 10000
+        echo y | $JAVA_HOME/bin/keytool -genkeypair -storetype JKS -dname "cn=ATAK CIV, ou=, o=, c=US" -alias $KEYSTORE_ALIAS -keypass $KEYSTORE_KEY_PASSWORD -keystore $HOME/secrets/android_keystore -storepass $KEYSTORE_STORE_PASSWORD -validity 10000
         cd atak
         rm -rf local.properties
         echo "takDebugKeyFile=$HOME/secrets/android_keystore" >> local.properties
