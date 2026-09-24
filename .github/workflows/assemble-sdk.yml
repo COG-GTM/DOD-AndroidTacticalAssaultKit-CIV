@@ -12,14 +12,17 @@ jobs:
       run:
         shell: bash
     steps:
+    - name: Install git (so actions/checkout uses git instead of a tarball download)
+      run: |
+        apt update
+        apt -y install git git-lfs wget unzip
+        git config --global --add safe.directory '*'
     - name: Checkout github repo
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
     - name: Checkout LFS objects
       run: |
-        apt update
-        apt -y install git git-lfs wget unzip
         git lfs install --local
         git lfs fetch
         git lfs checkout
