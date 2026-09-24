@@ -27,8 +27,8 @@
 
 
 <!-- Source and target versions for javac -->
-<property name="common.javac.source" value="1.6"/>
-<property name="common.javac.target" value="1.6"/>
+<property name="common.javac.source" value="1.8"/>
+<property name="common.javac.target" value="1.8"/>
 
 <!-- control internal vs external native init -->
 <property name="native-init" value="external" />
@@ -82,7 +82,7 @@
             <patternset refid="jcommoncommo.dirs"/>
         </depend>
 
-        <javac deprecation="true" destdir="." srcdir="." optimize="${dooptim}" source="${common.javac.source}" target="1.6">
+        <javac deprecation="true" destdir="." srcdir="." optimize="${dooptim}" source="${common.javac.source}" target="${common.javac.target}">
             <classpath refid="jcommoncommo.classpath"/>
             
             <patternset refid="jcommoncommo.dirs"/>

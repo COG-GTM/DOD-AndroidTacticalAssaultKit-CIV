@@ -86,7 +86,7 @@ Requirements for Development
 
 The following tools are required (at a minimum) to compile and deploy ATAK:
 
-- Java Development Kit 1.8 [OpenJDK version 1.8](OpenJDK https://adoptopenjdk.net/)
+- Java Development Kit 11 [OpenJDK version 11](https://adoptium.net/temurin/releases/?version=11)
 - git client 2.19 
 - git-lfs
 - NDK (the version that must be used is NDK 12b).

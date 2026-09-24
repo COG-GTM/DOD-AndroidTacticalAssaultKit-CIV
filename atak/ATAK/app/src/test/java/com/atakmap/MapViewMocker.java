@@ -1,67 +1,74 @@
-
 package com.atakmap;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.atakmap.android.maps.MapItem;
 import com.atakmap.android.maps.MapView;
 import com.atakmap.android.maps.Marker;
 import com.atakmap.comms.NetworkUtils;
 import com.atakmap.coremap.filesystem.FileSystemUtils;
-import com.atakmap.coremap.log.Log;
 
 import android.os.Environment;
 
 /**
- * Common Class that will initialize a basic MapView
+ * Registers static mocks for the classes needed to obtain a mocked
+ * {@link MapView}. The static mocks stay active until {@link #close()} is
+ * called, which must happen on the same thread that called
+ * {@link #getMapView()}.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({
-        Marker.class, Log.class, NetworkUtils.class, MapItem.class,
-        MapView.class,
-        FileSystemUtils.class, Environment.class, android.util.Log.class
-})
-public class MapViewMocker {
+public class MapViewMocker implements AutoCloseable {
 
-    /**
-     * Gets a Mocked MapView class
-     *
-     * @return A Mocked mapview class
-     */
+    private final List<MockedStatic<?>> staticMocks = new ArrayList<>();
+
+    private <T> MockedStatic<T> mockStatic(Class<T> clazz) {
+        MockedStatic<T> mocked = Mockito.mockStatic(clazz);
+        staticMocks.add(mocked);
+        return mocked;
+    }
+
     public MapView getMapView() {
-        PowerMockito.mockStatic(android.util.Log.class);
-        PowerMockito.mockStatic(Environment.class);
-        PowerMockito.mockStatic(MapItem.class);
-        PowerMockito.mockStatic(Marker.class);
-        PowerMockito.mockStatic(NetworkUtils.class);
-        PowerMockito.when(NetworkUtils.getIP()).thenReturn("127.0.0.1");
-        PowerMockito.mockStatic(FileSystemUtils.class);
-        File fileMock = PowerMockito.mock(File.class);
-        PowerMockito.when(fileMock.getAbsolutePath()).thenReturn("filePath");
-        PowerMockito.when(FileSystemUtils.getItem(Matchers.anyString()))
-                .thenReturn(fileMock);
-        PowerMockito.mockStatic(MapView.class);
+        mockStatic(android.util.Log.class);
+        mockStatic(Environment.class);
+        mockStatic(MapItem.class);
+        mockStatic(Marker.class);
 
-        MapView mapViewMock = PowerMockito.mock(MapView.class);
-        PowerMockito.when(MapView.getMapView()).thenReturn(mapViewMock);
+        MockedStatic<NetworkUtils> networkUtils = mockStatic(NetworkUtils.class);
+        networkUtils.when(NetworkUtils::getIP).thenReturn("127.0.0.1");
+
+        MockedStatic<FileSystemUtils> fileSystemUtils = mockStatic(
+                FileSystemUtils.class);
+        File fileMock = Mockito.mock(File.class);
+        Mockito.when(fileMock.getAbsolutePath()).thenReturn("filePath");
+        fileSystemUtils
+                .when(() -> FileSystemUtils.getItem(ArgumentMatchers.anyString()))
+                .thenReturn(fileMock);
+
+        MockedStatic<MapView> mapView = mockStatic(MapView.class);
+        MapView mapViewMock = Mockito.mock(MapView.class);
+        mapView.when(MapView::getMapView).thenReturn(mapViewMock);
         return mapViewMock;
     }
 
-    /**
-     * Sample test for mapview to satisy the test class since there must be at least one test in the
-     * class. The test passing indicates there was no issue mocking mapview
-     */
+    @Override
+    public void close() {
+        for (int i = staticMocks.size() - 1; i >= 0; i--)
+            staticMocks.get(i).close();
+        staticMocks.clear();
+    }
+
     @Test
     public void testMapView() {
-        MapView mapView = getMapView();
-        Assert.assertNotNull(mapView);
+        try (MapViewMocker mocker = new MapViewMocker()) {
+            MapView mapView = mocker.getMapView();
+            Assert.assertNotNull(mapView);
+        }
     }
 }

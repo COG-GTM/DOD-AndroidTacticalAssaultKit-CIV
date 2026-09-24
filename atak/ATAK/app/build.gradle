@@ -102,11 +102,8 @@ dependencies {
      androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
      androidTestImplementation 'androidx.test.ext:junit:1.1.3'
 
-     androidTestImplementation "org.mockito:mockito-core:3.12.4"
-     androidTestImplementation 'org.powermock:powermock-module-junit4:2.0.2'
-     androidTestImplementation 'org.powermock:powermock-api-mockito2:2.0.2'
-     androidTestImplementation 'org.powermock:powermock-core:2.0.2'
-     androidTestImplementation 'org.powermock:powermock-module-junit4-rule:2.0.2'
+     androidTestImplementation "org.mockito:mockito-core:4.11.0"
+     testImplementation "org.mockito:mockito-inline:4.11.0"
 
 
     // This is an easy way to give androidTest and test access to the ATAK main.jar without needing
@@ -612,6 +609,7 @@ jacoco {
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 android.applicationVariants.all { variant ->

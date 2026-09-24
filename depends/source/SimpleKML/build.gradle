@@ -4,7 +4,7 @@
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:4.2.2'
     }
  }
 
@@ -21,7 +21,7 @@ allprojects {
 }
 
 
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 dependencies {
     compileOnly fileTree(dir: 'libs', include: '*.jar')
@@ -52,7 +52,7 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }

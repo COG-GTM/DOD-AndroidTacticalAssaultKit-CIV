@@ -7,7 +7,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: openjdk:8-jdk
+      image: eclipse-temurin:11-jdk
     defaults:
       run:
         shell: bash
@@ -19,7 +19,7 @@ jobs:
     - name: Checkout LFS objects
       run: |
         apt update
-        apt -y install git-lfs
+        apt -y install git git-lfs wget unzip
         git lfs install --local
         git lfs fetch
         git lfs checkout
@@ -43,7 +43,7 @@ jobs:
         pip3 install conan==1.59.0
         echo "ANDROID_COMPILE_SDK=29" >> $GITHUB_ENV
         echo "ANDROID_BUILD_TOOLS=29.0.3" >> $GITHUB_ENV
-        echo "ANDROID_SDK_TOOLS=4333796" >> $GITHUB_ENV
+        echo "ANDROID_SDK_TOOLS=9477386" >> $GITHUB_ENV
         echo "NDK_VERSION=12b" >> $GITHUB_ENV
         echo "KEYSTORE_ALIAS=CI" >> $GITHUB_ENV
         echo "KEYSTORE_STORE_PASSWORD=$(apg -a 1 -n 1 -m 16 -x 16 -E '\')" >> $GITHUB_ENV
@@ -51,17 +51,20 @@ jobs:
         mkdir $HOME/secrets
     - name: set up Android SDK
       run: |
-       wget --quiet --tries=0 --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip;
-       unzip -qq -d android-sdk-linux android-sdk.zip;
+       wget --quiet --tries=0 --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip;
+       mkdir -p android-sdk-linux/cmdline-tools;
+       unzip -qq -d android-sdk-linux/cmdline-tools android-sdk.zip;
+       mv android-sdk-linux/cmdline-tools/cmdline-tools android-sdk-linux/cmdline-tools/latest;
        mkdir -p ~/.android;
        touch ~/.android/repositories.cfg;
-       echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null;
-       echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" >/dev/null;
-       echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null;
+       SDKMANAGER="android-sdk-linux/cmdline-tools/latest/bin/sdkmanager --sdk_root=$PWD/android-sdk-linux";
+       echo y | $SDKMANAGER "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null;
+       echo y | $SDKMANAGER "platform-tools" >/dev/null;
+       echo y | $SDKMANAGER "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null;
        echo "ANDROID_HOME=$PWD/android-sdk-linux" >> $GITHUB_ENV
        echo "$PWD/android-sdk-linux/platform-tools/" >> $GITHUB_PATH
        set +o pipefail
-       yes | android-sdk-linux/tools/bin/sdkmanager --licenses
+       yes | $SDKMANAGER --licenses
        set -o pipefail
     - name: set up Android NDK
       run: |
