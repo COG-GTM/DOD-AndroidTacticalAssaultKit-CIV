@@ -20,6 +20,7 @@ endif
 $(assimp_local_srcdir):
 	$(CP) -r $(assimp_src) $(OUTDIR)
 	rm -rf $(assimp_local_srcdir)/.git
+	patch -p1 -N -d $(assimp_local_srcdir) < $(DISTFILESDIR)/jassimp-javac-release8.patch
 	mkdir -p $(assimp_local_srcdir)/$(assimp_builddir)
 
 $(assimp_incdir):
