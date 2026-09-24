@@ -13,7 +13,7 @@ jobs:
         shell: bash
     steps:
     - name: Checkout github repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 1
     - name: Checkout LFS objects
@@ -146,7 +146,7 @@ jobs:
         popd
         mv pluginsdk atak-civ-sdk
     - name: Upload SDK build output
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: assembleCivSdk
         path: |
