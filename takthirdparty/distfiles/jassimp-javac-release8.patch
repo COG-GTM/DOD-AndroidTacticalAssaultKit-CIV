@@ -1,0 +1,11 @@
+--- a/port/jassimp/build.xml	2026-09-24 22:18:56.019315336 +0000
++++ b/port/jassimp/build.xml	2026-09-24 22:18:56.484315138 +0000
+@@ -16,7 +16,7 @@
+ 		<delete dir="${build.dir}" />
+ 		<mkdir dir="${build.dir}" />
+ 		<javac classpathref="classpath" destdir="${build.dir}" srcdir="${src.dir}"
+-			source="1.6" target="1.6" includeantruntime="false">
++			release="8" includeantruntime="false">
+ 		</javac>
+ 	</target>
+ 

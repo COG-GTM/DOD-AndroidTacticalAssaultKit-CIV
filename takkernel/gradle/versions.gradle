@@ -23,7 +23,7 @@ ext {
     junitVersion = '4.12'
     libLasVersion = '1.8.2c'
     kxmlVersion = '2.3.0'
-    mockitoVersion = '3.+'
+    mockitoVersion = '4.11.0'
     owaspDependencyCheckVersion = '6.5.3'
     priVersion = '1.0.0'
     slf4jApiVersion = '1.7.30'

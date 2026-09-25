@@ -1,6 +1,11 @@
 if (isJavaKernelBuild) {
     apply plugin: 'java-library' // apply the Java plugin
 
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     sourceSets {
         main {
             // add default location for java specific sourceset

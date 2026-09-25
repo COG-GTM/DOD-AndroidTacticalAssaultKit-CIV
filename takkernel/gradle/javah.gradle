@@ -92,15 +92,39 @@ abstract class GenerateJniHeaders extends DefaultTask {
             classpathArg += File.pathSeparator + cp.getAbsolutePath()
         }
 
-        generateConfig.getOrElse(Collections.emptyMap()).each { header, classes ->
-            project.exec {
-                // create command line args
-                ArrayList<String> clargs = ['javah', '-classpath', classpathArg, "-o", header]
-                clargs.addAll(classes)
+        // `javah` was removed in JDK 10; `javac -h` writes one header per class into a directory,
+        // so generate into a scratch directory and merge the results into the requested header.
+        def javac = new File(System.getProperty('java.home'), 'bin/javac').absolutePath
+        def sourceDirs = project.isAndroidKernelBuild ?
+                project.android.sourceSets.main.java.srcDirs :
+                project.sourceSets.main.java.srcDirs
+        def scratchDir = new File(project.buildDir, 'generateJniHeaders')
 
-                // execute javah
+        generateConfig.getOrElse(Collections.emptyMap()).each { header, classes ->
+            def sources = classes.collect { fullyQualifiedClassName ->
+                def relative = fullyQualifiedClassName.replaceAll("\\.", "/") + ".java"
+                def javaFile = sourceDirs.collect { new File(it, relative) }.find { it.exists() }
+                if (javaFile == null)
+                    throw new GradleException("Could not locate source for ${fullyQualifiedClassName}")
+                javaFile.absolutePath
+            }
+
+            project.delete(scratchDir)
+            scratchDir.mkdirs()
+            project.exec {
+                ArrayList<String> clargs = [javac, '-proc:none', '-classpath', classpathArg,
+                                            '-d', scratchDir.absolutePath, '-h', scratchDir.absolutePath]
+                clargs.addAll(sources)
                 commandLine clargs
             }
+
+            header.parentFile.mkdirs()
+            header.withOutputStream { out ->
+                project.fileTree(scratchDir).matching { include '**/*.h' }.files.sort().each { h ->
+                    h.withInputStream { out << it }
+                }
+            }
+            project.delete(scratchDir)
         }
     }
 }

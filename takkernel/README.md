@@ -41,8 +41,8 @@ aarbundle    \
 
 ### Setup
 
-1. Ensure [Java 8 or 9](https://adoptium.net/?variant=openjdk8) is present on system and the `JAVA_HOME` environment 
-   variable is set to reference the correct location (e.g. "C:\Program Files\Eclipse Adoptium\jdk-8.0.322.6-hotspot").
+1. Ensure [Java 11](https://adoptium.net/temurin/releases/?version=11) is present on system and the `JAVA_HOME` environment 
+   variable is set to reference the correct location (e.g. "C:\Program Files\Eclipse Adoptium\jdk-11.0.20.8-hotspot").
 
 2. Download and install [CMake](https://cmake.org/download/). Make sure it is added to `PATH`.
 

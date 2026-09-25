@@ -18,8 +18,8 @@ ifndef JAVA_HOME
 endif
 
 JAVAVERSION=$(shell $(JAVA_HOME)/bin/java -version 2>&1 )
-ifneq (1.8, $(findstring 1.8, $(JAVAVERSION)))
-    $(error wrong java version [needs oracle java 8] pointed to by $$JAVA_HOME, maven will fail in obtuse ways)
+ifneq (11., $(findstring 11., $(JAVAVERSION)))
+    $(error wrong java version [needs java 11] pointed to by $$JAVA_HOME, maven will fail in obtuse ways)
 endif
 
 

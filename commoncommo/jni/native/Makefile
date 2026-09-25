@@ -97,7 +97,6 @@ ifndef JAVA_HOME
 endif
 
 JAVAC = "$(JAVA_HOME)/bin/javac"
-JAVAH = "$(JAVA_HOME)/bin/javah"
 JROOT=$(COMMOPATH)/jni
 CLASSP=$(JROOT)
 
@@ -106,7 +105,14 @@ FILES_TO_CLEAN += $(wildcard j*.h)
 JSRCS=$(JROOT)/com/atakmap/commoncommo
 PACKAGE=com.atakmap.commoncommo
 
-JAVAHCMD=$(JAVAH) -classpath $(CLASSP) -o $@
+# javah was removed in JDK 10; `javac -h` emits one header per class into a
+# directory, so generate into a scratch dir and merge into the target header.
+JAVAH_TMP=$@.javah_tmp
+define JAVAHCMD
+rm -rf $(JAVAH_TMP) && mkdir -p $(JAVAH_TMP) && \
+$(JAVAC) -proc:none -classpath $(CLASSP) -d $(JAVAH_TMP) -h $(JAVAH_TMP) $(JSRCS)/$(1).java && \
+find $(JAVAH_TMP) -name '*.h' -exec cat {} + > $@ && rm -rf $(JAVAH_TMP)
+endef
 
 autoheaders: $(subst .cpp,.h,$(wildcard j*.cpp))
 
@@ -115,19 +121,19 @@ autoheaders: $(subst .cpp,.h,$(wildcard j*.cpp))
 commojni_common.o: commojni_common.cpp commojni_common.h commojni_impl.h
 
 jcommo.h: $(JSRCS)/Commo.class
-	$(JAVAHCMD) $(PACKAGE).Commo
+	$(call JAVAHCMD,Commo)
 jcommo.o: jcommo.cpp jcommo.h commojni_common.h commojni_impl.h
 
 jcotpointdata.h: $(JSRCS)/CoTPointData.class
-	$(JAVAHCMD) $(PACKAGE).CoTPointData
+	$(call JAVAHCMD,CoTPointData)
 jcotpointdata.o: jcotpointdata.cpp jcotpointdata.h commojni_common.h
 
 jcloudclient.h: $(JSRCS)/CloudClient.class
-	$(JAVAHCMD) $(PACKAGE).CloudClient
+	$(call JAVAHCMD,CloudClient)
 jcloudclient.o: jcloudclient.cpp jcloudclient.h commojni_common.h
 
 jnifileioprovider.h: $(JSRCS)/FileIOProvider.class
-	$(JAVAHCMD) $(PACKAGE).FileIOProvider
+	$(call JAVAHCMD,FileIOProvider)
 jnifileioprovider.o: jnifileioprovider.cpp jnifileioprovider.h commojni_common.h commojni_impl.h
 
 

@@ -23,9 +23,9 @@ MrsidLibrary.cpp : MrsidLibrary.h
 $(LIBS) : MrsidLibrary.cpp
                  
 MrsidLibrary.h : $(TOPDIR)/ATAKMapEngine/lib/src/main/java/com/lizardtech/android/mrsid/MrsidImageReaderImp.java
-	javah -classpath $(CLASSPATH) \
-                 -o $@ \
-                 com.lizardtech.android.mrsid.MrsidImageReaderImp
+	rm -rf $@.javah_tmp && mkdir -p $@.javah_tmp && \
+	javac -proc:none -classpath $(CLASSPATH) -d $@.javah_tmp -h $@.javah_tmp $< && \
+	cat $@.javah_tmp/*.h > $@ && rm -rf $@.javah_tmp
                  
 release : $(LIBS)
 	tar xvf *.tar.gz 

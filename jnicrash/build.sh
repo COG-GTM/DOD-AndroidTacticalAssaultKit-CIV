@@ -35,7 +35,10 @@ ${JAVA_HOME}/bin/javac com/atakmap/jnicrash/*.java || fail "compiling java sourc
 ${JAVA_HOME}/bin/jar cf jnicrash.jar com/atakmap/jnicrash/*.class || fail "creating JAR file"
 
 echo "Generating JNI headers"
-${JAVA_HOME}/bin/javah -o jni/jjnicrash.h com.atakmap.jnicrash.JNICrash || fail "generating JNI headers"
+rm -rf jni/.javah_tmp && mkdir -p jni/.javah_tmp
+${JAVA_HOME}/bin/javac -proc:none -classpath . -d jni/.javah_tmp -h jni/.javah_tmp com/atakmap/jnicrash/JNICrash.java || fail "generating JNI headers"
+cat jni/.javah_tmp/*.h > jni/jjnicrash.h || fail "generating JNI headers"
+rm -rf jni/.javah_tmp
 
 ${ANDROID_NDK}/ndk-build || fail "building native sources"
 
